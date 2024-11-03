@@ -423,28 +423,29 @@ class AsvzEnroller:
                             "Enrollment might have not been successful. Please check your E-Mail."
                         )
                     enrolled = True
-                else:
+                    continue
+                
 
-                    try:
-                        logging.info("Waiting for enrollment")
-                        WebDriverWait(driver, 5 * 60).until(
-                            EC.element_to_be_clickable(
-                                (
-                                    By.XPATH,
-                                    "//button[@id='btnRegister' and contains(@class, 'btn') and (contains(@class, 'btn-primary') or contains(@class, 'btn-default'))]",
-                                )
+                try:
+                    logging.info("Waiting for enrollment")
+                    WebDriverWait(driver, 5 * 60).until(
+                        EC.element_to_be_clickable(
+                            (
+                                By.XPATH,
+                                "//button[@id='btnRegister' and contains(@class, 'btn') and (contains(@class, 'btn-primary') or contains(@class, 'btn-default'))]",
                             )
-                        ).click()
-
-                        time.sleep(5)
-                    except TimeoutException as e:
-                        logging.info(
-                            "Place was already taken in the meantime. Rechecking for available places."
                         )
-                        continue
+                    ).click()
 
-                    logging.info("Submitted enrollment request.")
-                    enrolled = True
+                    time.sleep(5)
+                except TimeoutException as e:
+                    logging.info(
+                        "Place was already taken in the meantime. Rechecking for available places."
+                    )
+                    continue
+
+                logging.info("Submitted enrollment request.")
+                enrolled = True
 
                 try:
                     enrollment_msg_el = driver.find_element(
