@@ -405,33 +405,53 @@ class AsvzEnroller:
 
                 self.__organisation_login(driver)
 
-                try:
-                    logging.info("Waiting for enrollment")
-                    WebDriverWait(driver, 5 * 60).until(
-                        EC.element_to_be_clickable(
-                            (
-                                By.XPATH,
-                                "//button[@id='btnRegister' and (@class='btn-primary btn enrollmentPlacePadding' or @class='btn btn-default')]",
-                            )
+                withdraw_btn_el = driver.find_element(
+                        By.TAG_NAME, "app-lesson-withdraw-button"
+                    )
+
+                if(withdraw_btn_el.find_element(By.TAG_NAME, "span") != None):
+                    logging.info("Already enrolled!")
+                    participation_el = withdraw_btn_el.find_element(By.TAG_NAME, "span")
+                    participation_text = participation_el.get_attribute("innerHTML")
+
+                    m = LESSON_ENROLLMENT_NUMBER_REGEX.match(participation_text)
+                    if m:
+                        enrollment_number = m.group(1)
+                        logging.info(f"Your enrollment number is {enrollment_number}")
+                    else:
+                        logging.warning(
+                            "Enrollment might have not been successful. Please check your E-Mail."
                         )
-                    ).click()
+                    enrolled = True
+                else:
 
-                    time.sleep(5)
-                except TimeoutException as e:
-                    logging.info(
-                        "Place was already taken in the meantime. Rechecking for available places."
-                    )
-                    continue
+                    try:
+                        logging.info("Waiting for enrollment")
+                        WebDriverWait(driver, 5 * 60).until(
+                            EC.element_to_be_clickable(
+                                (
+                                    By.XPATH,
+                                    "//button[@id='btnRegister' and contains(@class, 'btn') and (contains(@class, 'btn-primary') or contains(@class, 'btn-default'))]",
+                                )
+                            )
+                        ).click()
 
-                logging.info("Submitted enrollment request.")
-                enrolled = True
+                        time.sleep(5)
+                    except TimeoutException as e:
+                        logging.info(
+                            "Place was already taken in the meantime. Rechecking for available places."
+                        )
+                        continue
+
+                    logging.info("Submitted enrollment request.")
+                    enrolled = True
 
                 try:
-                    enrollment_el = driver.find_element(
-                        By.TAG_NAME, "app-lessons-enrollment-button"
+                    enrollment_msg_el = driver.find_element(
+                        By.TAG_NAME, "app-enrollment-messages"
                     )
 
-                    alert_el = enrollment_el.find_element(
+                    alert_el = enrollment_msg_el.find_element(
                         By.XPATH, "//div[contains(@class, 'alert')]"
                     )
                     alert_text = alert_el.get_attribute("innerHTML")
@@ -443,7 +463,11 @@ class AsvzEnroller:
                             "Enrollment might have not been successful. Please check your E-Mail."
                         )
 
-                    participation_el = enrollment_el.find_element(By.TAG_NAME, "span")
+                    withdraw_btn_el = driver.find_element(
+                        By.TAG_NAME, "app-lesson-withdraw-button"
+                    )
+
+                    participation_el = withdraw_btn_el.find_element(By.TAG_NAME, "span")
                     participation_text = participation_el.get_attribute("innerHTML")
 
                     m = LESSON_ENROLLMENT_NUMBER_REGEX.match(participation_text)
