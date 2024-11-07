@@ -405,11 +405,11 @@ class AsvzEnroller:
 
                 self.__organisation_login(driver)
 
-                withdraw_btn_el = driver.find_element(
-                        By.TAG_NAME, "app-lesson-withdraw-button"
-                    )
+                try:
+                    withdraw_btn_el = driver.find_element(
+                            By.TAG_NAME, "app-lesson-withdraw-button"
+                        )
 
-                if(withdraw_btn_el.find_element(By.TAG_NAME, "span") != None):
                     logging.info("Already enrolled!")
                     participation_el = withdraw_btn_el.find_element(By.TAG_NAME, "span")
                     participation_text = participation_el.get_attribute("innerHTML")
@@ -424,7 +424,8 @@ class AsvzEnroller:
                         )
                     enrolled = True
                     continue
-                
+                except NoSuchElementException as e:
+                    pass
 
                 try:
                     logging.info("Waiting for enrollment")
