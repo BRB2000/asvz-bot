@@ -121,7 +121,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-ISSUES_URL = "https://github.com/fbuetler/asvz-bot/issues"
+ISSUES_URL = "https://github.com/BRB2000/asvz-bot/issues"
 NO_SUCH_ELEMENT_ERR_MSG = f"Element on website not found! This may happen when the website was updated recently. Please report this incident to: {ISSUES_URL}"
 
 LESSON_ENROLLMENT_NUMBER_REGEX = re.compile(r".*Du\shast\sdie\sPlatz\-Nr\.\s(\d+).*")
@@ -442,6 +442,11 @@ class AsvzEnroller:
                 except TimeoutException as e:
                     logging.info(
                         "Place was already taken in the meantime. Rechecking for available places."
+                    )
+                    continue
+                except Exception as e:
+                    logging.exception(
+                        "Unknown error, retrying to enroll..."
                     )
                     continue
 
