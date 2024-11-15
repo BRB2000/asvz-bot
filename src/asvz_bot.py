@@ -792,6 +792,13 @@ def main():
         help="Store your login credentials locally and reused them on the next run",
     )
 
+    parser.add_argument(
+        "--webdriver-path",
+        default = None,
+        type=str,
+        help="Use the specified webdriver instead of using webdriver manager."
+    )
+
     subparsers = parser.add_subparsers(
         dest="type", title="Enrollment type", help="Select the enrollment type"
     )
@@ -896,7 +903,10 @@ def main():
         logging.error(e)
         exit(1)
 
-    chromedriver_path = get_chromedriver_path(args.proxy)
+    if EnvVariables.webdriver_path == None:
+        chromedriver_path = get_chromedriver_path(args.proxy)
+    else:
+        chromedriver_path = EnvVariables.webdriver_path
 
     enroller = None
     if args.type == "lesson":
