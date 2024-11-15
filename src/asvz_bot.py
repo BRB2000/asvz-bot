@@ -903,7 +903,7 @@ def main():
         logging.error(e)
         exit(1)
 
-    if EnvVariables.webdriver_path == None:
+    if args.webdriver_path == None:
         chromedriver_path = get_chromedriver_path(args.proxy)
     else:
         chromedriver_path = EnvVariables.webdriver_path
